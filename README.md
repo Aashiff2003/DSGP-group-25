@@ -120,4 +120,4 @@ For any questions or feedback, contact the project team:
 	•	Akshan Kumarasan: akshan.20222376@iit.ac.lk
 	•	Aashiff Mohamed: aashiff.20232471@iit.ac.lk
 	•	Geethmi Rajapakshe: gethmin.20232272@iit.ac.lk
-	•	Shevon Fernando: gethmin.20232272@iit.ac.lk
+	•	Shevon Fernando: shevon.20233186@iit.ac.lk
