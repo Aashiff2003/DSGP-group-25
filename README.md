@@ -1,16 +1,16 @@
-Weather Classification & Image Enhancement
+# Weather Classification & Image Enhancement
 
-Overview
+#Overview
 
 This component of the Bird Detection Project focuses on identifying weather conditions in images and applying appropriate enhancement techniques to improve visibility. Since adverse weather (such as rain, fog, and low-light conditions) can degrade image quality, this model ensures that images are processed for optimal bird detection.
 
-Features
+#Features
 	•	Weather Classification: Categorizes images based on weather conditions (e.g., sunny, cloudy, rainy, foggy).
 	•	Image Enhancement: Applies adaptive techniques to enhance image clarity for better bird detection.
 	•	Fourier Transform for Rain Reduction: Removes high-frequency noise caused by rain to smooth out images.
 	•	Contrast and Brightness Adjustments: Enhances visibility in low-light or foggy conditions.
 
-Workflow
+#Workflow
 	1.	Preprocessing
 	•	Load and normalize input images.
 	•	Extract relevant features for weather classification.
@@ -24,7 +24,7 @@ Workflow
 	4.	Output
 	•	Generate an enhanced image that improves bird detection accuracy.
 
-Dependencies
+#Dependencies
 	•	Python (>=3.8)
 	•	OpenCV
 	•	NumPy
@@ -55,11 +55,11 @@ cv2.imshow("Enhanced Image", enhanced_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-Future Improvements
+#Future Improvements
 	•	Fine-tune weather classification using more diverse datasets.
 	•	Integrate real-time processing for live video input.
 	•	Implement deep learning-based denoising techniques for enhanced clarity.
 
-Contributors
+#Contributors
 	•	Akshan Kumarasan – Weather Classification & Image Enhancement
-Dataset Link- https://www.kaggle.com/datasets/vijaygiitk/multiclass-weather-dataset
+#Dataset Link- https://www.kaggle.com/datasets/vijaygiitk/multiclass-weather-dataset
