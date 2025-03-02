@@ -1,86 +1,129 @@
-import mysql.connector
-from mysql.connector import Error
+from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.security import generate_password_hash, check_password_hash
 
-# Database connection settings
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",  # Change if you set a MySQL password
-    "password": "",  # Leave empty if using default XAMPP settings
-}
+app = Flask(__name__)
 
-# Function to connect to MySQL and create the database if it doesn't exist
+# PostgreSQL Connection URI
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:aashiff12190@localhost/FalconEye"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# User Model
+class User(db.Model):
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(), unique=True, nullable=False)
+    password_hash = db.Column(db.String(), nullable=False)
+
+    def __repr__(self):
+        return f"{self.username}"
+
+# Bird Strike Model
+class BirdStrike(db.Model):
+    __tablename__ = 'bird_strike'
+    id = db.Column(db.Integer, primary_key=True)
+    weather = db.Column(db.String(), nullable=False)
+    bird_size = db.Column(db.String(), nullable=False)
+    bird_species = db.Column(db.String(), nullable=False)
+    bird_quantity = db.Column(db.Integer, nullable=False)
+    alert_level = db.Column(db.String(), nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f"{self.weather} - {self.bird_size} - {self.bird_species} - {self.bird_quantity} - {self.alert_level}"
+
+# Create Tables
 def create_database():
     try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        cursor = conn.cursor()
-        cursor.execute("CREATE DATABASE IF NOT EXISTS bird_strike_detection")
-        print("Database 'bird_strike_detection' is ready.")
-    except Error as e:
+        with app.app_context():
+            db.create_all()
+        print("Database and tables are ready.")
+    except SQLAlchemyError as e:
         print(f"Error creating database: {e}")
-    finally:
-        cursor.close()
-        conn.close()
 
-# Function to connect to the created database and create the table if it doesn't exist
-def create_table():
+# Add New User with Hashed Password
+def add_user(username, password):
     try:
-        conn = mysql.connector.connect(**DB_CONFIG, database="bird_strike_detection")
-        cursor = conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS bird_detection_records (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                num_birds INT NOT NULL,
-                weather VARCHAR(50) NOT NULL,
-                bird_size VARCHAR(50) NOT NULL,
-                alert_level VARCHAR(10) NOT NULL,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        print("Table 'bird_detection_records' is ready.")
-    except Error as e:
-        print(f"Error creating table: {e}")
-    finally:
-        cursor.close()
-        conn.close()
+        hashed_password = generate_password_hash(password)  # Hash the password
+        user = User(username=username, password_hash=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        return {"message": "User created successfully"}
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return {"error": str(e)}
 
-# Function to insert a record into the table
-def insert_record(num_birds, weather, bird_size, alert_level):
+# Check Password (Using Hashed Password)
+def password_check(username, password):
     try:
-        conn = mysql.connector.connect(**DB_CONFIG, database="bird_strike_detection")
-        cursor = conn.cursor()
-        sql = "INSERT INTO bird_detection_records (num_birds, weather, bird_size, alert_level) VALUES (%s, %s, %s, %s)"
-        values = (num_birds, weather, bird_size, alert_level)
-        cursor.execute(sql, values)
-        conn.commit()
-        print("Record inserted successfully.")
-    except Error as e:
-        print(f"Error inserting record: {e}")
-    finally:
-        cursor.close()
-        conn.close()
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password_hash, password):
+            return {"message": "Login successful"}
+        return {"error": "Invalid username or password"}
+    except SQLAlchemyError as e:
+        return {"error": str(e)}
 
-# Function to fetch all records from the table
+# Insert Bird Strike Record
+def add_bird_strike(weather, bird_size, bird_species, bird_quantity, alert_level):
+    try:
+        bird_strike = BirdStrike(
+            weather=weather,
+            bird_size=bird_size,
+            bird_species=bird_species,
+            bird_quantity=bird_quantity,
+            alert_level=alert_level
+        )
+        db.session.add(bird_strike)
+        db.session.commit()
+        return {"message": "Bird strike record added successfully"}
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return {"error": str(e)}
+
+# Fetch All Bird Strike Records
 def fetch_records():
     try:
-        conn = mysql.connector.connect(**DB_CONFIG, database="bird_strike_detection")
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM bird_detection_records ORDER BY timestamp DESC")
-        records = cursor.fetchall()
-        if records:
-            print("\n--- Bird Strike Detection Records ---")
-            for record in records:
-                print(record)
-        else:
-            print("No records found.")
-    except Error as e:
-        print(f"Error fetching records: {e}")
-    finally:
-        cursor.close()
-        conn.close()
+        records = BirdStrike.query.order_by(BirdStrike.timestamp.desc()).all()
+        return jsonify([
+            {
+                "id": record.id,
+                "weather": record.weather,
+                "bird_size": record.bird_size,
+                "bird_species": record.bird_species,
+                "bird_quantity": record.bird_quantity,
+                "alert_level": record.alert_level,
+                "timestamp": record.timestamp
+            }
+            for record in records
+        ])
+    except SQLAlchemyError as e:
+        return {"error": str(e)}
 
-# Main execution
+# Flask Routes
+@app.route('/')
+def home():
+    return "Bird Strike Detection System API is Running!"
+
+@app.route('/add_user/<string:username>/<string:password>')
+def add_user_route(username, password):
+    return add_user(username, password)
+
+@app.route('/login/<string:username>/<string:password>')
+def login(username, password):
+    return password_check(username, password)
+
+@app.route('/insert/<string:weather>/<string:bird_size>/<string:bird_species>/<int:bird_quantity>/<string:alert_level>')
+def insert(weather, bird_size, bird_species, bird_quantity, alert_level):
+    return add_bird_strike(weather, bird_size, bird_species, bird_quantity, alert_level)
+
+@app.route('/records')
+def records():
+    return fetch_records()
+
+# Run Flask App
 if __name__ == "__main__":
-    create_database()  # Ensure database exists
-    create_table()  # Ensure table exists
-    insert_record(5, "Cloudy", "Medium", "Moderate")  # Insert a sample record
-    fetch_records()  # Retrieve and display records
+    create_database()  
+    app.run(debug=True)
