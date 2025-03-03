@@ -1,15 +1,8 @@
-from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
-
-# PostgreSQL Connection URI
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:aashiff12190@localhost/FalconEye"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 # User Model
 class User(db.Model):
@@ -36,18 +29,18 @@ class BirdStrike(db.Model):
         return f"{self.weather} - {self.bird_size} - {self.bird_species} - {self.bird_quantity} - {self.alert_level}"
 
 # Create Tables
-def create_database():
-    try:
-        with app.app_context():
+def create_database(app):
+    with app.app_context():
+        try:
             db.create_all()
-        print("Database and tables are ready.")
-    except SQLAlchemyError as e:
-        print(f"Error creating database: {e}")
+            print("Database and tables are ready.")
+        except SQLAlchemyError as e:
+            print(f"Error creating database: {e}")
 
 # Add New User with Hashed Password
 def add_user(username, password):
     try:
-        hashed_password = generate_password_hash(password)  # Hash the password
+        hashed_password = generate_password_hash(password)
         user = User(username=username, password_hash=hashed_password)
         db.session.add(user)
         db.session.commit()
@@ -87,7 +80,7 @@ def add_bird_strike(weather, bird_size, bird_species, bird_quantity, alert_level
 def fetch_records():
     try:
         records = BirdStrike.query.order_by(BirdStrike.timestamp.desc()).all()
-        return jsonify([
+        return [
             {
                 "id": record.id,
                 "weather": record.weather,
@@ -98,32 +91,6 @@ def fetch_records():
                 "timestamp": record.timestamp
             }
             for record in records
-        ])
+        ]
     except SQLAlchemyError as e:
         return {"error": str(e)}
-
-# Flask Routes
-@app.route('/')
-def home():
-    return "Bird Strike Detection System API is Running!"
-
-@app.route('/add_user/<string:username>/<string:password>')
-def add_user_route(username, password):
-    return add_user(username, password)
-
-@app.route('/login/<string:username>/<string:password>')
-def login(username, password):
-    return password_check(username, password)
-
-@app.route('/insert/<string:weather>/<string:bird_size>/<string:bird_species>/<int:bird_quantity>/<string:alert_level>')
-def insert(weather, bird_size, bird_species, bird_quantity, alert_level):
-    return add_bird_strike(weather, bird_size, bird_species, bird_quantity, alert_level)
-
-@app.route('/records')
-def records():
-    return fetch_records()
-
-# Run Flask App
-if __name__ == "__main__":
-    create_database()  
-    app.run(debug=True)
