@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up - BuyAnything.com</title>
+  <link rel="stylesheet" href="css/signup.css">
+  <script src="javascript/signup.js"></script>
+</head>
+
+<body style="background-image: url('Images/signup.png')">
+	<header>
+        <div class="navbar">
+          <a href="Main.html" class="navbar-brand"><img class="logo" src="Images/Falconlogo.png" alt="logo"></a>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a href="Main.html" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item">
+              <a href="LiveModel.html" class="nav-link">Live Model</a>
+            </li>
+            <li class="nav-item">
+              <a href="Report.html" class="nav-link">Report</a>
+            </li>
+            <li class="nav-item">
+              <a href="about us.html" class="nav-link">About Us</a>
+            </li>
+          </ul>
+    
+          <div class="app-icons">
+            <ul>
+              <li>
+                <a href="Signup.html" class="app-icon">
+                  <img src="Images/profile1.png" style="width: 20px; height: 20px;" alt="profile">
+                </a>
+                <ul>
+                  <li>Sign in</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+  
+	<main>
+
+    <form id="signupForm" method="post">
+        <label for="first">First Name :</label><input id="first" type="text" name="first_name" 
+        placeholder="First Name" required />
+        <label for="second">Last Name :</label><input id="second" type="text" name="last_name" 
+        placeholder="Last Name" required />
+        <label for="gender">Gender :</label><select id="gender" name="gender" required>
+            <option value="" disabled selected>Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+        <label for="age">Age :</label><input id="age" type="number" name="age" placeholder="Age" required />
+        <label for="email">Email :</label><input id="email" type="email" name="email" 
+        placeholder="Email" required />
+        <label for="password">Password :</label><input id="password" type="password" 
+        name="password" placeholder="Password" required />
+        <label for="confirm_password">Confirm Password :</label><input id="confirm_password" type="password" 
+        name="confirm_password" 
+        placeholder="Re-enter Password" required />
+		
+        <details>
+            <summary>Select your preferences:</summary><br>
+            <fieldset>
+                <legend>Preferences</legend>
+                <ul>
+                    <li>
+                        <label for="hair_styles"> Electronics </label>
+                        <input type="checkbox" id="hair_styles" name="hair_styles" value="hair_styles" />
+                    </li>
+                    <li>
+                        <label for="face_creams"> Fashion </label>
+                        <input type="checkbox" id="face_creams" name="face_creams" value="face_creams" />
+                    </li>
+                    <li>
+                        <label for="equipments"> Automotive </label>
+                        <input type="checkbox" id="equipments" name="equipments" value="equipments" />
+                    </li>
+                    <li>
+                        <label for="cosmetics"> Health and Beauty </label>
+                        <input type="checkbox" id="cosmetics" name="cosmetics" value="Cosmetics" />
+                    </li>
+					<li>
+                        <label for="cosmetics"> Home and Garden </label>
+                        <input type="checkbox" id="cosmetics" name="cosmetics" value="Cosmetics" />
+                    </li>
+					<li>
+                        <label for="cosmetics"> Wine and Spirits </label>
+                        <input type="checkbox" id="cosmetics" name="cosmetics" value="Cosmetics" />
+                    </li>
+					<li>
+                        <label for="cosmetics"> Groceries </label>
+                        <input type="checkbox" id="cosmetics" name="cosmetics" value="Cosmetics" />
+                    </li>
+                </ul>
+            </fieldset>
+        </details>
+        
+        <a><button type="submit" class="Sbutton">Sign Up</button></a>
+		<button type="reset" class="Rbutton">Reset</button>
+    </form><br><br><br><br><br><br>
+	</main>
+
+	<div id="UserMessage" style="display: none; color: rgb(6, 0, 128);">Dear Anna, thank you for using 
+        Signing Up with us, the recommended results will be shown in a while.
+    </div>	
+	
+	<footer>
+        <p>© Copyright <a href="Shevon.html"> Shevon Fernando </a>. All rights reserved</p>
+	</footer>
+	
+</body>
+
+</html>
