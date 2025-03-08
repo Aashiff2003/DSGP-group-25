@@ -1,15 +1,10 @@
-from flask import Flask, jsonify
-from database import db, create_database, add_user, password_check, add_bird_strike, fetch_records
+from flask import Flask, jsonify, Response
+from database import add_user, password_check, add_bird_strike, fetch_records
+from config import create_app  # Import the app creation function from config.py
+from visualization import plot_alert_level_distribution, plot_bird_quantity_vs_time
 
-app = Flask(__name__)
-
-# PostgreSQL Connection URI
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:aashiff12190@localhost/FalconEye"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Initialize Database
-db.init_app(app)
-create_database(app)  # Ensure tables are created
+# Create Flask app using config
+app = create_app()
 
 # Flask Routes
 @app.route('/')
@@ -32,6 +27,28 @@ def insert(weather, bird_size, bird_species, bird_quantity, alert_level):
 def records():
     return jsonify(fetch_records())
 
-# Run Flask App
+@app.route('/visualize')
+def visualize():
+    # Get the image responses as base64-encoded strings
+    alert_level_img = plot_alert_level_distribution()
+    bird_quantity_img = plot_bird_quantity_vs_time()
+
+    # Return images separately in HTML format with base64-encoded image data
+    html_content = f'''
+    <html>
+        <body>
+            <h1>Visualization</h1>
+            <h2>Alert Level Distribution</h2>
+            <img src="data:image/png;base64,{alert_level_img}" alt="Alert Level Distribution">
+            <h2>Bird Quantity Over Time</h2>
+            <img src="data:image/png;base64,{bird_quantity_img}" alt="Bird Quantity Over Time">
+        </body>
+    </html>
+    '''
+    return Response(html_content, mimetype='text/html')
+    return render_template('index.html')
+
+
+# Run Flask Apppyhon
 if __name__ == "__main__":
     app.run(debug=True)

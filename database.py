@@ -77,20 +77,24 @@ def add_bird_strike(weather, bird_size, bird_species, bird_quantity, alert_level
         return {"error": str(e)}
 
 # Fetch All Bird Strike Records
+from flask import current_app
+
 def fetch_records():
     try:
-        records = BirdStrike.query.order_by(BirdStrike.timestamp.desc()).all()
-        return [
-            {
-                "id": record.id,
-                "weather": record.weather,
-                "bird_size": record.bird_size,
-                "bird_species": record.bird_species,
-                "bird_quantity": record.bird_quantity,
-                "alert_level": record.alert_level,
-                "timestamp": record.timestamp
-            }
-            for record in records
-        ]
+        with current_app.app_context():  # Ensure Flask context is active
+            records = BirdStrike.query.order_by(BirdStrike.timestamp.desc()).all()
+            return [
+                {
+                    "id": record.id,
+                    "weather": record.weather,
+                    "bird_size": record.bird_size,
+                    "bird_species": record.bird_species,
+                    "bird_quantity": record.bird_quantity,
+                    "alert_level": record.alert_level,
+                    "timestamp": record.timestamp
+                }
+                for record in records
+            ]
     except SQLAlchemyError as e:
         return {"error": str(e)}
+
