@@ -1,8 +1,17 @@
-from flask import Flask, jsonify, Response
+from flask import Flask, jsonify, Response, request
+from config import create_app, db
 from database import add_user, password_check, add_bird_strike, fetch_records
-from config import create_app  # Import the app creation function from config.py
 from visualization import plot_alert_level_distribution, plot_bird_quantity_vs_time
+import joblib
+import pandas as pd
+# load Alert model
+alert_model = joblib.load('random_forest_model.joblib')
 
+# Define the feature order (as used during training)
+alert_feature_order = [
+    'NumberStruckActual', 'WildlifeSize', 'ConditionsSky_No Cloud',
+    'ConditionsSky_Overcast', 'ConditionsSky_Some Cloud'
+]
 # Create Flask app using config
 app = create_app()
 
@@ -48,6 +57,24 @@ def visualize():
     return Response(html_content, mimetype='text/html')
     return render_template('index.html')
 
+
+@app.route('/predict_alert', methods=['POST'])
+def predict_alert():
+    try:
+        # Get input data from the request
+        input_data = request.json
+
+        # Convert input data into a DataFrame with the correct feature order
+        input_df = pd.DataFrame([input_data], columns=alert_feature_order)
+
+        # Make prediction
+        prediction = alert_model.predict(input_df)
+
+        # Return the predicted alert level as a JSON response
+        return jsonify({'predicted_alert_level': int(prediction[0])})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
 # Run Flask Apppyhon
 if __name__ == "__main__":
