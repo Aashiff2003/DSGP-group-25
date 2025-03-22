@@ -1,81 +1,92 @@
-from flask import Flask, jsonify, Response, request
-from config import create_app, db
-from database import add_user, password_check, add_bird_strike, fetch_records
-from visualization import plot_alert_level_distribution, plot_bird_quantity_vs_time
-import joblib
-import pandas as pd
-# load Alert model
-alert_model = joblib.load('random_forest_model.joblib')
+import cv2
+import threading
+import time
+from flask import Flask, render_template, request, jsonify, Response
+from models import classify_weather, detect_birds
+import os
 
-# Define the feature order (as used during training)
-alert_feature_order = [
-    'NumberStruckActual', 'WildlifeSize', 'ConditionsSky_No Cloud',
-    'ConditionsSky_Overcast', 'ConditionsSky_Some Cloud'
-]
-# Create Flask app using config
-app = create_app()
+app = Flask(__name__)
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Flask Routes
+# Shared Variables
+current_weather = "Unknown"
+current_bird_status = "No Detection"
+
+# Route for video upload and display
 @app.route('/')
-def home():
-    return "Bird Strike Detection System API is Running!"
+def index():
+    return render_template('LiveModel.html')
 
-@app.route('/add_user/<string:username>/<string:password>')
-def add_user_route(username, password):
-    return add_user(username, password)
+@app.route('/upload', methods=['POST'])
+def upload_video():
+    if 'video' not in request.files:
+        return jsonify({"error": "No video part"})
 
-@app.route('/login/<string:username>/<string:password>')
-def login(username, password):
-    return password_check(username, password)
+    video_file = request.files['video']
 
-@app.route('/insert/<string:weather>/<string:bird_size>/<string:bird_species>/<int:bird_quantity>/<string:alert_level>')
-def insert(weather, bird_size, bird_species, bird_quantity, alert_level):
-    return add_bird_strike(weather, bird_size, bird_species, bird_quantity, alert_level)
+    if video_file.filename == '':
+        return jsonify({"error": "No selected file"})
 
-@app.route('/records')
-def records():
-    return jsonify(fetch_records())
+    if video_file:
+        uploads_dir = app.config['UPLOAD_FOLDER']
+        os.makedirs(uploads_dir, exist_ok=True)
 
-@app.route('/visualize')
-def visualize():
-    # Get the image responses as base64-encoded strings
-    alert_level_img = plot_alert_level_distribution()
-    bird_quantity_img = plot_bird_quantity_vs_time()
+        video_path = os.path.join(uploads_dir, video_file.filename)
+        video_file.save(video_path)
+        return jsonify({"video_url": f"/{video_path}"})
 
-    # Return images separately in HTML format with base64-encoded image data
-    html_content = f'''
-    <html>
-        <body>
-            <h1>Visualization</h1>
-            <h2>Alert Level Distribution</h2>
-            <img src="data:image/png;base64,{alert_level_img}" alt="Alert Level Distribution">
-            <h2>Bird Quantity Over Time</h2>
-            <img src="data:image/png;base64,{bird_quantity_img}" alt="Bird Quantity Over Time">
-        </body>
-    </html>
-    '''
-    return Response(html_content, mimetype='text/html')
-    return render_template('index.html')
+# Generate video frames for bird detection
+def generate_frames(video_path):
+    global current_bird_status
+    cap = cv2.VideoCapture(video_path)
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        # Perform bird detection (this now draws a bounding box around detected birds)
+        current_bird_status = detect_birds(frame)
+
+        ret, buffer = cv2.imencode('.jpg', frame)
+        if not ret:
+            continue
+        frame = buffer.tobytes()
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+    cap.release()
 
 
-@app.route('/predict_alert', methods=['POST'])
-def predict_alert():
-    try:
-        # Get input data from the request
-        input_data = request.json
+# Video streaming route
+@app.route('/video_stream/<filename>')
+def video_stream(filename):
+    return Response(generate_frames(os.path.join(app.config['UPLOAD_FOLDER'], filename)),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
-        # Convert input data into a DataFrame with the correct feature order
-        input_df = pd.DataFrame([input_data], columns=alert_feature_order)
+# Weather classification every 5 minutes
+def weather_classification(video_path):
+    global current_weather
+    cap = cv2.VideoCapture(video_path)
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-        # Make prediction
-        prediction = alert_model.predict(input_df)
+        current_weather = classify_weather(frame)
+        print(f"Weather Update: {current_weather}")
+        time.sleep(300)  # Run every 5 minutes
 
-        # Return the predicted alert level as a JSON response
-        return jsonify({'predicted_alert_level': int(prediction[0])})
+# Start parallel threads for weather classification and bird detection
+def start_threads(video_path):
+    threading.Thread(target=weather_classification, args=(video_path,), daemon=True).start()
+    print("Weather classification thread started.")
 
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
+# API to fetch results
+@app.route('/results', methods=['GET'])
+def results():
+    return jsonify({"weather": current_weather, "bird_status": current_bird_status})
 
-# Run Flask Apppyhon
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
