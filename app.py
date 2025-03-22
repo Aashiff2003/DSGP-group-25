@@ -1,92 +1,177 @@
 import cv2
 import threading
 import time
+import os
+import uuid
 from flask import Flask, render_template, request, jsonify, Response
 from models import classify_weather, detect_birds
-import os
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
-# Shared Variables
-current_weather = "Unknown"
-current_bird_status = "No Detection"
+# Session management
+sessions = {}
+session_lock = threading.Lock()
 
-# Route for video upload and display
+def cleanup_sessions():
+    while True:
+        with session_lock:
+            current_time = time.time()
+            expired = [sid for sid, session in sessions.items() 
+                      if current_time - session['last_activity'] > 3600]
+            for sid in expired:
+                if sessions[sid]['cap'] is not None:
+                    sessions[sid]['cap'].release()
+                del sessions[sid]
+        time.sleep(300)
+
+threading.Thread(target=cleanup_sessions, daemon=True).start()
+
 @app.route('/')
 def index():
     return render_template('LiveModel.html')
 
 @app.route('/upload', methods=['POST'])
-def upload_video():
+def handle_upload():
     if 'video' not in request.files:
-        return jsonify({"error": "No video part"})
+        return jsonify({"error": "No video file"}), 400
+        
+    file = request.files['video']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
 
-    video_file = request.files['video']
+    try:
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        video_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(video_path)
+        
+        session_id = str(uuid.uuid4())
+        with session_lock:
+            sessions[session_id] = {
+                "weather": "Detecting...",
+                "detections": [],
+                "processing_active": True,
+                "video_path": video_path,
+                "video_size": {"width": 0, "height": 0},
+                "last_activity": time.time(),
+                "cap": None,
+                "paused": False,
+                "last_weather_update": 0
+            }
+            
+        threading.Thread(target=process_video, args=(session_id,)).start()
+        
+        return jsonify({
+            "message": "Processing started",
+            "session_id": session_id,
+            "stream_url": f"/video_feed/{session_id}",
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    if video_file.filename == '':
-        return jsonify({"error": "No selected file"})
+def process_video(session_id):
+    with session_lock:
+        session = sessions.get(session_id)
+        if not session:
+            return
+        cap = cv2.VideoCapture(session['video_path'])
+        session['cap'] = cap
+        sessions[session_id] = session
+    
+    try:
+        while True:
+            with session_lock:
+                session = sessions.get(session_id)
+                if not session or not session['processing_active']:
+                    break
+                
+                if session['paused']:
+                    time.sleep(0.1)
+                    continue
 
-    if video_file:
-        uploads_dir = app.config['UPLOAD_FOLDER']
-        os.makedirs(uploads_dir, exist_ok=True)
+            ret, frame = cap.read()
+            if not ret:
+                break
 
-        video_path = os.path.join(uploads_dir, video_file.filename)
-        video_file.save(video_path)
-        return jsonify({"video_url": f"/{video_path}"})
+            # Update detections
+            detections = detect_birds(frame)
+            
+            # Update weather every 15 minutes (900 seconds)
+            current_time = time.time()
+            if current_time - session['last_weather_update'] > 900:
+                weather = classify_weather(frame)
+                with session_lock:
+                    sessions[session_id]['weather'] = weather
+                    sessions[session_id]['last_weather_update'] = current_time
 
-# Generate video frames for bird detection
-def generate_frames(video_path):
-    global current_bird_status
-    cap = cv2.VideoCapture(video_path)
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+            with session_lock:
+                sessions[session_id]['detections'] = detections
+                sessions[session_id]['last_activity'] = current_time
+                sessions[session_id]['video_size'] = {
+                    "width": int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+                    "height": int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                }
 
-        # Perform bird detection (this now draws a bounding box around detected birds)
-        current_bird_status = detect_birds(frame)
+            time.sleep(0.03)  # ~30fps processing
 
-        ret, buffer = cv2.imencode('.jpg', frame)
-        if not ret:
-            continue
-        frame = buffer.tobytes()
+    finally:
+        with session_lock:
+            if session_id in sessions:
+                sessions[session_id]['processing_active'] = False
+                sessions[session_id]['cap'].release()
 
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+@app.route('/video_feed/<session_id>')
+def video_feed(session_id):
+    def generate(session_id):
+        with session_lock:
+            session = sessions.get(session_id)
+            if not session:
+                return
+            cap = cv2.VideoCapture(session['video_path'])
+            
+        while True:
+            with session_lock:
+                if not session['processing_active']:
+                    break
+            
+            ret, frame = cap.read()
+            if not ret:
+                break
+                
+            ret, buffer = cv2.imencode('.jpg', frame)
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+            
+        cap.release()
+    
+    return Response(generate(session_id), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-    cap.release()
+@app.route('/control/<session_id>', methods=['POST'])
+def control_processing(session_id):
+    action = request.json.get('action')
+    with session_lock:
+        if session_id in sessions:
+            if action == 'pause':
+                sessions[session_id]['paused'] = True
+            elif action == 'resume':
+                sessions[session_id]['paused'] = False
+            return jsonify({"status": action})
+    return jsonify({"error": "Invalid session"}), 404
 
-
-# Video streaming route
-@app.route('/video_stream/<filename>')
-def video_stream(filename):
-    return Response(generate_frames(os.path.join(app.config['UPLOAD_FOLDER'], filename)),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
-# Weather classification every 5 minutes
-def weather_classification(video_path):
-    global current_weather
-    cap = cv2.VideoCapture(video_path)
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        current_weather = classify_weather(frame)
-        print(f"Weather Update: {current_weather}")
-        time.sleep(300)  # Run every 5 minutes
-
-# Start parallel threads for weather classification and bird detection
-def start_threads(video_path):
-    threading.Thread(target=weather_classification, args=(video_path,), daemon=True).start()
-    print("Weather classification thread started.")
-
-# API to fetch results
-@app.route('/results', methods=['GET'])
-def results():
-    return jsonify({"weather": current_weather, "bird_status": current_bird_status})
+@app.route('/status/<session_id>')
+def get_status(session_id):
+    with session_lock:
+        session = sessions.get(session_id)
+        if session:
+            return jsonify({
+                "weather": session['weather'],
+                "detections": session['detections'],
+                "video_size": session['video_size'],
+                "paused": session['paused']
+            })
+    return jsonify({"error": "Session not found"}), 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)

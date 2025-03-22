@@ -1,78 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up - BuyAnything.com</title>
-
-  <!-- Linking CSS File -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/LiveModel.css') }}">
-
-  <!-- Linking JS File with defer attribute to ensure script is loaded after HTML -->
-  <script src="{{ url_for('static', filename='js/LiveModel.js') }}" defer></script>
+    <title>Bird Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/LiveModel.css') }}">
 </head>
-
 <body>
+    <div class="container">
+        <h1>Bird Detection Analyzer</h1>
+        
+        <div class="video-container">
+            <input type="file" id="videoInput" accept="video/*">
+            <button onclick="processVideo()">Analyze Video</button>
+            <div class="controls">
+                <button onclick="togglePause()" id="pauseBtn">Pause</button>
+            </div>
+            <div class="video-wrapper">
+                <img src="" id="videoStream" class="video-output">
+                <canvas id="annotationCanvas" class="annotation-layer"></canvas>
+            </div>
+        </div>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-    <div class="sidebar-header">
-      <h2>Dashboard</h2>
-    </div>
-    <ul class="sidebar-nav">
-      <li><a href="Main.html">🏠 Home</a></li>
-      <li><a href="LiveModel.html">📊 Live Model</a></li>
-      <li><a href="Report.html">📄 Reports</a></li>
-      <li><a href="about_us.html">ℹ️ About Us</a></li>
-    </ul>
-  </div>
-
-  <!-- Main Header -->
-  <header>
-    <div class="navbar">
-      <a href="Main.html" class="navbar-brand"><img class="logo" src="{{ url_for('static', filename='Images/Falconlogo.png') }}" alt="logo"></a>
-      <ul class="navbar-nav">
-        <li class="nav-item"><a href="Main.html" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="LiveModel.html" class="nav-link">Live Model</a></li>
-        <li class="nav-item"><a href="about_us.html" class="nav-link">About Us</a></li>
-      </ul>
-      <div class="app-icons">
-        <ul>
-          <li>
-            <a href="Report.html" class="app-icon">
-              <img src="{{ url_for('static', filename='Images/profile1.png') }}" style="width: 20px; height: 20px" alt="profile">
-            </a>
-            <ul>
-              <li>Sign in</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <!-- User Message Section -->
-    <div id="UserMessage" style="display: none; color: rgb(6, 0, 128);">
-      Dear Anna, thank you for signing up with us. The recommended results will be shown shortly.
+        <div class="status-panel">
+            <div class="status-card">
+                <h3>Weather Condition</h3>
+                <p id="weatherStatus">Detecting...</p>
+            </div>
+            <div class="status-card">
+                <h3>Bird Activity</h3>
+                <p id="detectionStatus">No birds detected</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Video Upload Section -->
-    <div class="bodyM">
-      <h1>Bird Strike Detection with Video Upload</h1>
-      <h3>Upload a Recorded Video</h3>
-      <input type="file" id="videoUpload" accept="video/*" onchange="previewVideo(event)" />
-      <button onclick="uploadVideo()">Upload and Show Video</button>
-
-      <h3>Uploaded Video</h3>
-      <video id="uploadedVideo" width="640" height="480" controls style="display:none;"></video>
-    </div>
-  </main>
-
-  <footer>
-    <p>© Copyright <a href="Shevon.html">Shevon Fernando</a>. All rights reserved</p>
-  </footer>
-
+    <script src="{{ url_for('static', filename='js/LiveModel.js') }}"></script>
 </body>
 </html>

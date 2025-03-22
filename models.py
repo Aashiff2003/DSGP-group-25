@@ -1,48 +1,40 @@
 import cv2
 import numpy as np
 from keras.models import load_model
+from ultralytics import YOLO
 
-# Load models
 weather_model = load_model('model/fixed_weather_model.keras')
-bird_model = load_model('bird_model.h5')
+bird_model = YOLO('C:/Users/aashi/Downloads/Geethmi/Backend/best.pt')
 
-# Preprocessing functions
-def preprocess_frame(frame, target_size=(224, 224)):
-    frame = cv2.resize(frame, target_size)
-    frame = frame / 255.0
-    frame = np.expand_dims(frame, axis=0)
-    return frame
-
-# Classify Weather
 def classify_weather(frame):
     try:
-        preprocessed_frame = preprocess_frame(frame)
-        prediction = weather_model.predict(preprocessed_frame)
-        classes = ['Sunny', 'Rainy', 'Cloudy', 'Snowy']
-        return classes[np.argmax(prediction)]
+        resized = cv2.resize(frame, (224, 224))
+        normalized = resized / 255.0
+        pred = weather_model.predict(np.expand_dims(normalized, axis=0))
+        classes = ['Cloudy', 'Rainy', 'Sunny']
+        return classes[np.argmax(pred)]
     except Exception as e:
-        print(f"Error in weather classification: {e}")
+        print(f"Weather error: {e}")
         return "Unknown"
 
-# Detect Birds
-
-# Assuming that you are using a model that can give bounding box coordinates for bird detection
 def detect_birds(frame):
     try:
-        preprocessed_frame = preprocess_frame(frame)
-        prediction = bird_model.predict(preprocessed_frame)
-
-        # If the model provides bounding boxes (e.g., for object detection models)
-        # Assuming prediction[0] contains the bounding boxes and confidence scores
-        if prediction[0][0] > 0.5:  # You can adjust this threshold as needed
-            # Example: assuming prediction provides (x, y, w, h) for bounding box
-            x, y, w, h = prediction[0][1:5]  # Example, adjust based on your model
-            # Draw a bounding box around the detected bird
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)  # Green color, thickness 2
-            return "Bird Detected"
-        else:
-            return "No Bird Detected"
+        results = bird_model(frame)
+        detections = []
+        h, w = frame.shape[:2]
+        
+        for result in results:
+            for box in result.boxes:
+                if box.conf.item() > 0.3:
+                    x1, y1, x2, y2 = box.xyxyn[0].tolist()
+                    detections.append({
+                        "x": int(round(x1 * w)),
+                        "y": int(round(y1 * h)),
+                        "w": int(round((x2 - x1) * w)),
+                        "h": int(round((y2 - y1) * h)),
+                        "confidence": float(box.conf.item())
+                    })
+        return detections
     except Exception as e:
-        print(f"Error in bird detection: {e}")
-        return "Detection Error"
-
+        print(f"Detection error: {e}")
+        return []
