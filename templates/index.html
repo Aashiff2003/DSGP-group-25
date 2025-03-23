@@ -35,7 +35,7 @@
         }
         #stats-panel {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
             padding: 1.5rem;
             background: #2c3e50;
@@ -77,8 +77,12 @@
                 <div class="stat-value" id="bird-count">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Average Bird Size</div>
+                <div class="stat-label">Bird Size</div>
                 <div class="stat-value" id="bird-size">...</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Alert Level</div>
+                <div class="stat-value" id="alert-level">...</div>
             </div>
         </div>
     </div>
@@ -91,6 +95,7 @@
                     document.getElementById('weather-status').textContent = data.weather;
                     document.getElementById('bird-count').textContent = data.bird_count;
                     document.getElementById('bird-size').textContent = data.bird_size;
+                    document.getElementById('alert-level').textContent = data.alert_level;
                 });
             setTimeout(updateStats, 500);
         }
