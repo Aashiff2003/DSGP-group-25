@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from flask import Flask, render_template, request, redirect, url_for, Response, jsonify
 import cv2
 import numpy as np
@@ -258,17 +257,3 @@ def video_feed():
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     app.run(debug=True)
-=======
-import tensorflow as tf
-import os
-
-# Force TensorFlow to use CPU and float32
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-tf.keras.backend.set_floatx('float32')
-
-# Load the .keras model
-model_path = "/Users/akshankumarsen/PycharmProjects/aoi/final_weather_classification_model_fixed.keras"
-model = tf.keras.models.load_model(model_path)
-
-print("✅ Model loaded successfully in float32 mode using .keras format!")
->>>>>>> origin/main
