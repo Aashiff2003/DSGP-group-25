@@ -1,34 +1,49 @@
-from flask_sqlalchemy import SQLAlchemy
+from db import db
 from sqlalchemy.exc import SQLAlchemyError
+from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
-
-db = SQLAlchemy()
+from datetime import datetime
 
 # User Model
 class User(db.Model):
-    __tablename__ = 'user'
+    __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(), unique=True, nullable=False)
-    password_hash = db.Column(db.String(), nullable=False)
+    username = db.Column(db.String(255), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
-        return f"{self.username}"
+        return f"<User {self.username}>"
 
-# Bird Strike Model
-class BirdStrike(db.Model):
-    __tablename__ = 'bird_strike'
+# Report Model
+class Report(db.Model):
+    __tablename__ = 'report'
     id = db.Column(db.Integer, primary_key=True)
-    weather = db.Column(db.String(), nullable=False)
-    bird_size = db.Column(db.String(), nullable=False)
-    bird_species = db.Column(db.String(), nullable=False)
+    weather = db.Column(db.String(255), nullable=False)
+    bird_size = db.Column(db.String(255), nullable=False)
+    bird_species = db.Column(db.String(255), nullable=False)
     bird_quantity = db.Column(db.Integer, nullable=False)
-    alert_level = db.Column(db.String(), nullable=False)
-    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+    alert_level = db.Column(db.String(255), nullable=False)
+    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    end_time = db.Column(db.DateTime, nullable=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"{self.weather} - {self.bird_size} - {self.bird_species} - {self.bird_quantity} - {self.alert_level}"
+        return f"<Report {self.weather} | {self.bird_species} x{self.bird_quantity}>"
 
-# Create Tables
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "weather": self.weather,
+            "bird_size": self.bird_size,
+            "bird_species": self.bird_species,
+            "bird_quantity": self.bird_quantity,
+            "alert_level": self.alert_level,
+            "start_time": self.start_time,
+            "end_time": self.end_time,
+            "timestamp": self.timestamp
+        }
+
+# Create tables
 def create_database(app):
     with app.app_context():
         try:
@@ -37,7 +52,7 @@ def create_database(app):
         except SQLAlchemyError as e:
             print(f"Error creating database: {e}")
 
-# Add New User with Hashed Password
+# Add new user
 def add_user(username, password):
     try:
         hashed_password = generate_password_hash(password)
@@ -49,7 +64,7 @@ def add_user(username, password):
         db.session.rollback()
         return {"error": str(e)}
 
-# Check Password (Using Hashed Password)
+# Check login credentials
 def password_check(username, password):
     try:
         user = User.query.filter_by(username=username).first()
@@ -59,42 +74,30 @@ def password_check(username, password):
     except SQLAlchemyError as e:
         return {"error": str(e)}
 
-# Insert Bird Strike Record
-def add_bird_strike(weather, bird_size, bird_species, bird_quantity, alert_level):
+# Add new report
+def add_report(weather, bird_size, bird_species, bird_quantity, alert_level, start_time=None, end_time=None):
     try:
-        bird_strike = BirdStrike(
+        report = Report(
             weather=weather,
             bird_size=bird_size,
             bird_species=bird_species,
             bird_quantity=bird_quantity,
-            alert_level=alert_level
+            alert_level=alert_level,
+            start_time=start_time or datetime.utcnow(),
+            end_time=end_time
         )
-        db.session.add(bird_strike)
+        db.session.add(report)
         db.session.commit()
-        return {"message": "Bird strike record added successfully"}
+        return {"message": "Report added successfully"}
     except SQLAlchemyError as e:
         db.session.rollback()
         return {"error": str(e)}
 
-# Fetch All Bird Strike Records
-from flask import current_app
-
-def fetch_records():
+# Fetch all reports
+def fetch_reports():
     try:
-        with current_app.app_context():  # Ensure Flask context is active
-            records = BirdStrike.query.order_by(BirdStrike.timestamp.desc()).all()
-            return [
-                {
-                    "id": record.id,
-                    "weather": record.weather,
-                    "bird_size": record.bird_size,
-                    "bird_species": record.bird_species,
-                    "bird_quantity": record.bird_quantity,
-                    "alert_level": record.alert_level,
-                    "timestamp": record.timestamp
-                }
-                for record in records
-            ]
+        with current_app.app_context():
+            reports = Report.query.order_by(Report.timestamp.desc()).all()
+            return [r.to_dict() for r in reports]
     except SQLAlchemyError as e:
         return {"error": str(e)}
-
