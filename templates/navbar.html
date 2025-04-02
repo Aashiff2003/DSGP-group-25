@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Home.css') }}">
+    <style>
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            display: inline;
+            padding: 10px;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <!-- <img src="../Resources/logooo.png" class="logo" alt="Logo" style="width: 100px; height: 100px;"> -->
+            <img src="{{ url_for('static', filename='resources/FalconEye.png') }}" alt="Logo" class="logo" style="width: 180px; height: 180px;" >
+            <!-- <span class="logo-name">
+                FalconEye
+            </span> -->
+        </div>
+
+        <div class="nav-menu">
+            <a href="{{ url_for('home') }}" class="side-nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('insights') }}" class="side-nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Live Insights</span>
+            </a>
+            <a href="{{ url_for('report') }}" class="side-nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+            <a href="{{ url_for('account') }}" class="side-nav-item">
+                <i class="fas fa-user-circle"></i>
+                <span>Account</span>
+            </a>
+        </div>
+
+        <!-- Test -->
+        <!-- <div class="nav-menu">
+            <a href="Home.html" class="side-nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="Insights.html" class="side-nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Live Insights</span>
+            </a>
+            <a href="Report.html" class="side-nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+            <a href="Account.html" class="side-nav-item">
+                <i class="fas fa-user-circle"></i>
+                <span>Account</span>
+            </a>
+        </div> -->
+
+    </div>
+</body>
+
+</html>

@@ -2,12 +2,15 @@ from flask import Flask, render_template, request, redirect, url_for, Response, 
 import cv2
 import numpy as np
 from ultralytics import YOLO
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model # type: ignore
 import os
 import threading
 from datetime import datetime
 import pandas as pd
 from joblib import load
+import time
+import webbrowser
+
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -67,6 +70,12 @@ alert_level = "Calculating..."
 lock = threading.Lock()
 video_source = None
 
+# Flag to contorl live detection
+running = True
+
+# Videos for live feed
+video_paths = ["static/resources/liveFeed/1.mp4", "static/resources/liveFeed/2.mp4", "static/resources/liveFeed/3.mp4", "static/resources/liveFeed/4.mp4", "static/resources/liveFeed/5.mp4"]  
+
 def prepare_date_features():
     now = datetime.now()
     return {
@@ -87,6 +96,48 @@ def manual_scale(features):
         scaled_value = (features[i] - min_val) / (max_val - min_val)
         scaled_features.append(scaled_value)
     return np.array(scaled_features)
+
+def live_detection():
+    global running,bird_count,current_weather,predicted_size,alert_level
+
+    while running:
+        for video_path in video_paths:
+            cap = cv2.VideoCapture(video_path)
+
+            while cap.isOpened() and running:
+                success, frame = cap.read()
+                if not success:
+                    break # Move to next video when current one ends
+
+                resized_frame = cv2.resize(frame,TARGET_SIZE)
+
+                results = bird_model(resized_frame)
+                current_count = len(results[0].boxes) if results else 0
+
+                with lock:
+                    bird_count = current_count
+                
+                weather_thread = threading.Thread(target=process_weather,args=(frame,))
+                size_thread = threading.Thread(target=predict_bird_size)
+                alert_thread = threading.Thread(target=predict_alert_level)
+
+                weather_thread.start()
+                size_thread.start()
+                alert_thread.start()
+
+                weather_thread.join()
+                size_thread.join()
+                alert_thread.join()
+
+                time.sleep(2) 
+            
+            cap.release()
+            
+
+# Start live detection when app starts
+detection_thread = threading.Thread(target=live_detection, daemon=True)
+detection_thread.start()
+
 
 def predict_bird_size():
     global predicted_size
@@ -155,8 +206,20 @@ def predict_alert_level():
     except Exception as e:
         print(f"Alert level prediction error: {str(e)}")
 
-@app.route('/', methods=['GET', 'POST'])
-def upload_video():
+@app.route('/')
+def home():
+    return render_template('Home.html')
+
+@app.route('/Report')
+def report():
+    return render_template('Report.html')
+
+@app.route('/Account')
+def account():
+    return render_template('Account.html')
+
+@app.route('/Insights', methods=['GET', 'POST'])
+def insights():
     global video_source
     if request.method == 'POST':
         if 'webcam' in request.form:
@@ -168,7 +231,7 @@ def upload_video():
                 video_source = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
                 file.save(video_source)
                 return redirect(url_for('index'))
-    return render_template('upload.html')
+    return render_template('Insights.html')
 
 @app.route('/index')
 def index():
@@ -254,6 +317,14 @@ def generate_frames():
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+# Function to open the dashboard automatically
+def open_dashboard():
+    time.sleep(1)
+    webbrowser.open("http://127.0.0.1:5000/") 
+
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+    threading.Thread(target=open_dashboard, daemon=True).start()
+
     app.run(debug=True)
