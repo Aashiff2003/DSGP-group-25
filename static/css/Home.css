@@ -1,0 +1,522 @@
+:root {
+    --primary-color: #5c4965;
+    --primary-light: #f7f1e9;
+    --primary-dark: #282242;
+    --secondary-color: #241b2c;
+    --gray-light: #f7f1e9;
+    --gray-medium: #e7ded3;
+    --gray-dark: #000000;
+    --danger: #f36c6c;
+    --success: #2dbf78;
+    --white: #ebdfdf;
+    --text-primary: #262a39;
+    --text-secondary: #5c4965;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        sans-serif;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    padding: 40px;
+    background: #f7f1e9;
+}
+
+h1 {
+    color: #5c4965;
+    font-size: 28px;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 280px;
+    background-color: var(--white);
+    border-right: 1px solid var(--gray-medium);
+    padding: 35px 0;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 100;
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.03);
+    z-index: 1100;
+}
+
+.logo {
+    position: relative;
+    padding: 0 0px 35px 7px;
+    left: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-name {
+    position: absolute;
+    padding: 30px 0px 35px 0px;
+    font-family: Berlin Sans FB;
+    font-weight: 600;
+    font-size: 24px;
+    color: #424242;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0 15px;
+}
+
+.side-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    border-left: 3px solid transparent;
+    text-align: center;
+}
+
+.side-nav-item:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.side-nav-item.active {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 600;
+    border-left: 3px solid var(--primary-color);
+}
+
+.side-nav-item i {
+    margin-right: 15px;
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Main Content Styles */
+.main-container {
+    flex: 1;
+    margin-left: 280px;
+    padding: 40px;
+    max-width: 1800px;
+    background: #ebdfdf;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+}
+
+.header{
+    position: absolute;
+    background: #ebdfdf;
+    color: #5c4965;
+    width: 100%;
+    height: 80px;
+    top: 0;
+    left: 0;
+    padding: 30px;
+    border-radius: 15px;
+    /* border-bottom: 1px solid #eee; */
+}
+
+.line{
+    /* margin-top: 30px; */
+    position: absolute;
+    width: 93%;
+    height: 1px; /* Thickness */
+    background-color: #5c4965; /* Color */
+    border: none;
+}
+
+.sub-container{
+    position: absolute;
+    background-color: #ebdfdf;
+    width: 100%;
+    height: 80%;
+    top: 110px;
+    left: 0;
+    padding: 0 20px 20px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: auto;
+}
+
+
+/* Horizontal side-bar */
+/* .hor-nav-item a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-style: none;
+    font-weight: 350;
+    font-size: 15px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.hor-nav-item:hover {
+    text-decoration: underline;
+    text-decoration-color: #404454 ;
+    color: #111219;
+    transform: translateX(5px);
+} */
+
+/* Font color doed not work need to check */
+/* .hor-nav-item.active { 
+    text-decoration-color: #404454; 
+    color: #111219;
+    text-decoration: underline;
+    font-weight: 500;
+} */
+
+
+/* Saved This Month Card */
+.savings-card {
+    background-color: var(--primary-light);
+    border-radius: 18px;
+    padding: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    height: auto;
+    flex-grow: 0;
+}
+
+.savings-title {
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px ;
+}
+
+.savings-title::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.time-filter {
+    display: flex;
+    margin-bottom: 25px;
+    background-color: var(--gray-light);
+    border-radius: 30px;
+    padding: 5px;
+}
+
+.time-option {
+    padding: 8px 18px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.time-option:hover {
+    color: var(--primary-color);
+}
+
+.time-option.active {
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-weight: 600;
+    box-shadow: 0 5px 10px rgba(66, 112, 244, 0.3);
+}
+
+.chart-container {
+    height: 320px;
+    position: relative;
+    margin: 0;
+}
+
+
+
+/* Notify */
+.notify-card {
+    background: var(--primary-light);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 30px;
+    height: 150px;
+    top: 10px;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+
+/* Risk Level Card */
+.live-notify {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #f7f1e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    margin-right: 30px;
+    left: 110px;
+    background-color: #b6e08c;
+}
+
+.live-notify::before {
+    content: "";
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    background: #f5e1c8;
+}
+
+.live-notify::after {
+    content: "";
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    animation: pulse 2s infinite;
+}
+
+.risk-text {
+    position: relative;
+    font-size: 45px;
+    font-weight: 700;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    color: #5c4965;
+    margin-left: 130px;
+    font-family: Bahnschrift;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.8;
+    }
+
+    70% {
+        transform: scale(1);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+    }
+
+    .savings-card {
+        grid-column: span 3;
+    }
+
+    .dashboard-sidebar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .credit-card {
+        width: 280px;
+        height: 170px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .main-content {
+        padding: 30px;
+    }
+
+    .transfer-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .transaction-section {
+        grid-template-columns: 1fr;
+    }
+
+    .plan-card {
+        grid-column: span 1;
+    }
+
+    .promo-card {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .promo-info {
+        max-width: 100%;
+    }
+
+    .credit-card {
+        width: 100%;
+        transform: rotate(0);
+    }
+
+    .credit-card:hover {
+        transform: translateY(-10px) rotate(0);
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        width: 80px;
+        padding: 25px 0;
+    }
+
+    .logo {
+        padding: 0 15px 25px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .logo svg text {
+        display: none;
+    }
+
+    .nav-item span,
+    .premium-box h3 {
+        display: none;
+    }
+
+    .nav-item {
+        justify-content: center;
+        padding: 15px;
+    }
+
+    .nav-item i {
+        margin-right: 0;
+        font-size: 20px;
+    }
+
+    .premium-box {
+        padding: 20px 15px;
+        margin: 15px;
+    }
+
+    .premium-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .main-content {
+        margin-left: 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 20px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-right {
+        width: 100%;
+        margin-top: 25px;
+        justify-content: space-between;
+    }
+
+    .search-bar {
+        width: 50%;
+    }
+
+    .transfer-cards,
+    .dashboard-sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .savings-card {
+        height: auto;
+    }
+
+    .welcome-title {
+        font-size: 24px;
+    }
+
+    .savings-amount {
+        font-size: 32px;
+    }
+
+    .transaction-section {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-bar {
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .header-right {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .time-filter {
+        overflow-x: auto;
+        padding: 5px;
+    }
+
+    .time-option {
+        padding: 8px 12px;
+        white-space: nowrap;
+    }
+
+    .promo-title {
+        font-size: 22px;
+    }
+
+    .promo-desc {
+        font-size: 14px;
+    }
+
+    .promo-btn {
+        padding: 12px 20px;
+    }
+}
