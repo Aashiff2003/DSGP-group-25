@@ -6,7 +6,7 @@ from datetime import datetime
 
 # User Model
 class User(db.Model):
-    __tablename__ = 'User'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
@@ -14,7 +14,8 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.username}>"
 
-# Report Model
+
+# Report (Bird Strike) Model
 class Report(db.Model):
     __tablename__ = 'report'
     id = db.Column(db.Integer, primary_key=True)
@@ -43,6 +44,35 @@ class Report(db.Model):
             "timestamp": self.timestamp
         }
 
+
+# Report Schedule History Model
+class ReportScheduleHistory(db.Model):
+    __tablename__ = 'report_schedule_history'
+    id = db.Column(db.Integer, primary_key=True)
+    schedule_date = db.Column(db.DateTime, nullable=False)
+    employee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(100))
+    bird_count = db.Column(db.Integer)
+    weather = db.Column(db.String(255))
+    visual_graphs = db.Column(db.LargeBinary)
+
+    employee = db.relationship('User', backref='scheduled_reports')
+
+
+# Report History Model
+class ReportHistory(db.Model):
+    __tablename__ = 'report_history'
+    id = db.Column(db.Integer, primary_key=True)
+    report_date = db.Column(db.DateTime, nullable=False)
+    employee_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(100))
+    bird_count = db.Column(db.Integer)
+    weather = db.Column(db.String(255))
+    visual_graphs = db.Column(db.LargeBinary)
+
+    employee = db.relationship('User', backref='report_history')
+
+
 # Create tables
 def create_database(app):
     with app.app_context():
@@ -50,7 +80,8 @@ def create_database(app):
             db.create_all()
             print("Database and tables are ready.")
         except SQLAlchemyError as e:
-            print(f"Error creating database: {e}")
+            current_app.logger.error(f"Error creating database: {e}")
+
 
 # Add new user
 def add_user(username, password):
@@ -64,6 +95,7 @@ def add_user(username, password):
         db.session.rollback()
         return {"error": str(e)}
 
+
 # Check login credentials
 def password_check(username, password):
     try:
@@ -74,7 +106,8 @@ def password_check(username, password):
     except SQLAlchemyError as e:
         return {"error": str(e)}
 
-# Add new report
+
+# Add new bird report
 def add_report(weather, bird_size, bird_species, bird_quantity, alert_level, start_time=None, end_time=None):
     try:
         report = Report(
@@ -93,11 +126,107 @@ def add_report(weather, bird_size, bird_species, bird_quantity, alert_level, sta
         db.session.rollback()
         return {"error": str(e)}
 
-# Fetch all reports
+
+# Fetch all reports (bird strikes)
 def fetch_reports():
     try:
+        records = Report.query.order_by(Report.timestamp.desc()).all()
+        return [record.to_dict() for record in records]
+    except RuntimeError:  # no application context
         with current_app.app_context():
-            reports = Report.query.order_by(Report.timestamp.desc()).all()
-            return [r.to_dict() for r in reports]
+            records = Report.query.order_by(Report.timestamp.desc()).all()
+            return [record.to_dict() for record in records]
+    except SQLAlchemyError as e:
+        return {"error": str(e)}
+
+
+# Add to Report Schedule History
+def add_schedule_history(schedule_date, employee_id, title, bird_count, weather, visual_graph_data):
+    try:
+        record = ReportScheduleHistory(
+            schedule_date=schedule_date,
+            employee_id=employee_id,
+            title=title,
+            bird_count=bird_count,
+            weather=weather,
+            visual_graphs=visual_graph_data
+        )
+        db.session.add(record)
+        db.session.commit()
+        return {"message": "Report schedule history added"}
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return {"error": str(e)}
+
+
+# Add to Report History
+def add_report_history(report_date, employee_id, title, bird_count, weather, visual_graph_data):
+    try:
+        record = ReportHistory(
+            report_date=report_date,
+            employee_id=employee_id,
+            title=title,
+            bird_count=bird_count,
+            weather=weather,
+            visual_graphs=visual_graph_data
+        )
+        db.session.add(record)
+        db.session.commit()
+        return {"message": "Report history added"}
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return {"error": str(e)}
+
+
+# Fetch all schedule history
+def fetch_schedule_history():
+    try:
+        records = ReportScheduleHistory.query.order_by(ReportScheduleHistory.schedule_date.desc()).all()
+        return [{
+            "id": r.id,
+            "schedule_date": r.schedule_date,
+            "employee_id": r.employee_id,
+            "title": r.title,
+            "bird_count": r.bird_count,
+            "weather": r.weather
+        } for r in records]
+    except RuntimeError:  # no app context
+        with current_app.app_context():
+            records = ReportScheduleHistory.query.order_by(ReportScheduleHistory.schedule_date.desc()).all()
+            return [{
+                "id": r.id,
+                "schedule_date": r.schedule_date,
+                "employee_id": r.employee_id,
+                "title": r.title,
+                "bird_count": r.bird_count,
+                "weather": r.weather
+            } for r in records]
+    except SQLAlchemyError as e:
+        return {"error": str(e)}
+
+
+# Fetch all report history
+def fetch_report_history():
+    try:
+        records = ReportHistory.query.order_by(ReportHistory.report_date.desc()).all()
+        return [{
+            "id": r.id,
+            "report_date": r.report_date,
+            "employee_id": r.employee_id,
+            "title": r.title,
+            "bird_count": r.bird_count,
+            "weather": r.weather
+        } for r in records]
+    except RuntimeError:  # no app context
+        with current_app.app_context():
+            records = ReportHistory.query.order_by(ReportHistory.report_date.desc()).all()
+            return [{
+                "id": r.id,
+                "report_date": r.report_date,
+                "employee_id": r.employee_id,
+                "title": r.title,
+                "bird_count": r.bird_count,
+                "weather": r.weather
+            } for r in records]
     except SQLAlchemyError as e:
         return {"error": str(e)}
