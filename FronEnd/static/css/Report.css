@@ -1,0 +1,234 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    padding: 40px;
+}
+
+h1 {
+    color: #5c4965;
+    font-size: 30px;
+}
+
+.main-content{
+    flex: 1;
+    margin-left: 280px;
+    padding: 40px;
+    max-width: 1800px;
+    background: #ebdfdf;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+}
+
+.rep-header{
+    position: absolute;
+    background: #ebdfdf;
+    color: #5c4965;
+    width: 100%;
+    height: 80px;
+    top: 0;
+    left: 0;
+    padding: 30px;
+    border-radius: 15px;
+    /* border-bottom: 1px solid #eee; */
+}
+
+.rep-line{
+    /* margin-top: 80px; */
+    position: absolute;
+    width: 93%;
+    height: 1px; /* Thickness */
+    background-color: #5c4965; /* Color */
+    border: none;
+}
+
+.rep-sub-content{
+    position: absolute;
+    background-color: #ebdfdf;
+    width: 100%;
+    height: 80%;
+    top: 100px;
+    left: 0;
+    padding: 0 30px 30px 30px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    /* overflow: auto; */
+}
+
+/* .main-container {
+    left: 280px;
+    top: 50px;
+    bottom: 100px;
+    padding: 0 40px;
+    max-width: 1800px;
+    width: calc(100% - 280px);
+    height: calc(100vh - 90px);
+    background: #f7f1e9;
+    position: fixed;
+    overflow: hidden;
+} */
+
+/* .header-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ebdfdf;
+    color: #5c4965;
+    padding: 15px 0;
+    text-align: center;
+    z-index: 1000;
+} */
+
+
+.sub-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #ebdfdf;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center;
+    align-items: center; */
+    overflow: hidden;
+    padding-bottom: 1rem;
+}
+
+.option-box {
+    /* z-index: 100; */
+    width: 100%;
+    height: calc(100vh - 260px);
+    margin: 0.5rem 0.5rem 0;
+    /* padding: 1.5rem; */
+    border-radius: 12px;
+    background-color: #f7f1e9;
+}
+
+.tab-box {
+    z-index: 100;
+    position: relative;
+    max-width: 1000px;
+    margin: 0;
+    /* border: 2px solid #ebdfdf; */
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+    margin-bottom: 50px;
+    /* background-color: #f7f1e9; */
+}
+
+.nav-tabs {
+    border-bottom: none !important;
+}
+
+.nav-tabs .nav-link {
+    color: #5c4965;
+    font-weight: 500;
+    width: 200px;
+    /* padding-left: 60px; */
+    border-bottom: none;
+}
+
+.nav-tabs .nav-link.active {
+    /* border-top: 1px solid #5c4965 !important;
+    border-left: 1px solid #5c4965 !important;
+    border-right: 1px solid #5c4965 !important; */
+    background-color: #f7f1e9 !important;
+    border-bottom: none;
+}
+
+
+.nav-tabs .nav-link:hover {
+    border-top: 1px solid #5c4965 !important;
+    border-left: 1px solid #5c4965 !important;
+    border-right: 1px solid #5c4965 !important;
+    color: #5c4965;
+    cursor: pointer !important;
+}
+
+.button {
+    background-color: #5c4965;
+    color: #f7f1e9;
+    border-radius: 5px;
+    padding: 0.5rem;
+    width: 200px;
+    border: none;
+    margin: 1.5rem 1.5rem 1.5rem 1.5rem;
+    font-weight: 500;
+}
+
+.history-block {
+    width: 100%;
+    max-height: 400px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-left: 1.5rem 0;
+    padding: 1.5rem;
+    /* border: 2px solid #ebdfdf; */
+    border-radius: 12px;
+    margin-bottom: 50px;
+}
+
+.history-block h3 {
+    position: sticky;
+    top: 0;
+    font-family: Bahnschrift Light;
+    /* font-weight: 1000; */
+    color: #5c4965;
+    /* text-align: center; */
+    margin-bottom: 1rem;
+    z-index: 2;
+}
+
+.table-container{
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table thead{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #5c4965; /* Match header color */
+    color: white; /* Make text readable */
+}
+
+.table tbody {
+    overflow-y: auto;
+}
+
+.table-striped {
+    background-color: #f7f1e9 !important;
+}
+
+/* Ensure modal appears above the sidebar */
+.modal {
+    z-index: 1200 !important; /* Higher than the sidebar */
+}
+
+/* Ensure modal backdrop (dark overlay) is also above */
+.modal-backdrop {
+    z-index: 1150 !important; /* Higher than sidebar but below modal */
+}
+
+/* Fix modal width & height */
+.custom-modal-size {
+    width: 1000px;  /* Adjust width */
+    height: 600px; /* Adjust height */
+    max-height: 90vh; /* Prevent excessive height */
+    overflow-y: auto; /* Enable scrolling inside modal */
+}
+
+/* Position modal towards the right */
+.custom-modal-position {
+    top: 70px !important;
+    /* margin-left: 320px !important;  */
+    /* margin-right: 100px !important; */
+}

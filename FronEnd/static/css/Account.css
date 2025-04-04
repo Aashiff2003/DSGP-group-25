@@ -1,0 +1,291 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    padding: 40px;
+}
+
+.main-container {
+    flex: 1;
+    margin-left: 280px;
+    padding: 40px;
+    max-width: 1800px;
+    background: #ebdfdf;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+}
+
+.acc-header{
+    position: absolute;
+    background: #ebdfdf;
+    color: #5c4965;
+    width: 100%;
+    /* height: 20px; */
+    top: 0;
+    left: 0;
+    padding: 30px;
+    border-radius: 15px;
+    /* border-bottom: 1px solid #eee; */
+}
+
+.acc-line{
+    /* margin-top: 30px; */
+    position: absolute;
+    width: 93%;
+    height: 1px; /* Thickness */
+    background-color: #a390ac; /* Color */
+    border: none;
+}
+
+.sub-content{
+    position: absolute;
+    background-color: #ebdfdf;
+    width: 100%;
+    height: 80%;
+    top: 110px;
+    left: 0;
+    padding: 0 30px 30px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: auto;
+}
+
+
+/* Account Container */
+h1 {
+    margin: 0;
+    color: #5c4965;
+    font-size: 28px;
+}
+
+/* Profile Section */
+.profile-section {
+    top: 0px;
+}
+
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #5c4965;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 24px;
+    margin: 0 0 5px 0;
+    color: #5c4965;
+}
+
+.profile-email {
+    color: #625866;
+    margin: 0 0 15px 0;
+}
+
+.profile-stats {
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 15px;
+    font-weight: bold;
+    color: #5c4965;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #625866;
+}
+
+/* Account Details */
+.details-section {
+    position: relative;
+    /* margin-bottom: 30px; */
+    padding: 10px 30px 30px;
+}
+
+.section-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #5c4965;
+    display: flex;
+    align-items: center;
+}
+
+.section-title i {
+    margin-right: 10px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.detail-item {
+    margin-bottom: 15px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #7c757f;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.detail-value {
+    font-size: 16px;
+    padding: 10px;
+    background: #f2ece6;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+/* Security Section */
+.security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f7f1e9;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+}
+
+.security-info {
+    display: flex;
+    align-items: center;
+}
+
+.security-info i {
+    margin-right: 10px;
+    color: #3498db;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #5c4965;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #5c4965;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #5c4965;
+    color: #5c4965;
+}
+
+.btn-outline:hover {
+    background: #5c4965;
+    color: white;
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background: #ebdfdf;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1200;
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1150;
+}
+
+.modal h2 {
+    margin-bottom: 10px;
+}
+
+.modal input {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f7f1e9;
+}
+
+.modal button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-btn {
+    background: #5c4965;
+    color: white;
+}
+
+.cancel-btn {
+    background: #ccc;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    .profile-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-pic {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .profile-stats {
+        justify-content: center;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}

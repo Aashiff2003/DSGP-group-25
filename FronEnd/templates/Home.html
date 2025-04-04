@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FalconEye Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Home.css') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='resources/css/bootstrap.min.css') }}"> -->
+        <!-- <link rel="stylesheet" href="../Resources/bootstrap-5.2.3/css/bootstrap.min.css"> -->
+
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div id="navbar">
+        {% include 'navbar.html' %}
+    </div>
+
+    <!-- <script>
+        fetch('navbar.html').then(response => response.text()).then(data => document.getElementById('navbar').innerHTML = data);
+    </script> -->
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="header">
+            <h1>Dashboard</h1><br>
+            <hr class="line">
+        </div>
+        <div class="sub-container">
+            <div class="savings-card">
+                <h3 class="savings-title">Risk Assessment</h3>
+                <div class="chart-container">
+                    <canvas id="riskChart"></canvas>
+                </div>
+            </div>
+            <div class="notify-card">
+                <div class="live-notify">
+                </div>
+                <div class="risk-text">No Risk... Safe Flight</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    
+    <!-- Load Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/Home.js') }}"></script>
+    <!-- <script src="../static/js/Home.js"></script> -->
+
+
+    <!-- <script src="../Resources/bootstrap-5.2.3/js/bootstrap.bundle.min.js"></script> -->
+
+</body>
+
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Account.css') }}">
+    <!-- <link rel="stylesheet" href="../Resources/bootstrap-5.2.3/css/bootstrap.min.css"> -->
+
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div id="navbar">
+        {% include 'navbar.html' %}
+    </div>
+    <!-- <script>
+        fetch('navbar.html').then(response => response.text()).then(data => document.getElementById('navbar').innerHTML = data);
+    </script> -->
+
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="acc-header">
+            <h1>Account Settings</h1><br>
+            <hr class="acc-line">
+        </div>
+        <div class="sub-content">
+            <div class="profile-section">
+                <!-- <img src="../Resources/logo1.jpg" alt="Profile Picture" class="profile-pic"> -->
+                <img src="{{ url_for('static', filename='resources/logo1.jpg') }}" alt="Profile Picture" class="profile-pic">
+                <div class="profile-info">
+                    <h2 class="profile-name" id="display-name">Geethmi Rajapakshe</h2>
+                    <p class="profile-email" id="display-email">Geethmi.2003@falconeye.com</p>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">Admin</div>
+                            <div class="stat-label">Role</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Account Details -->
+            <div class="details-section">
+                <h3 class="section-title"><i class="fas fa-info-circle" style="color: #5c4965;"></i> Personal
+                    Information</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">First Name</div>
+                        <div class="detail-value" id="display-firstname">Geethmi</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Last Name</div>
+                        <div class="detail-value" id="display-lastname">Rajapakshe</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value" id="display-email2">Geethmi.2003@falconeye.com</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Phone</div>
+                        <div class="detail-value" id="display-phone">0768116503</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Organization</div>
+                        <div class="detail-value">FalconEye Security</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Department</div>
+                        <div class="detail-value">Security Operations</div>
+                    </div>
+                </div>
+                <button class="btn btn-outline" style="margin-top: 20px;" id="edit-btn">
+                    <i class="fas fa-edit"></i> Edit Information
+                </button>
+            </div>
+
+            <!-- Security Section -->
+            <div class="details-section">
+                <h3 class="section-title"><i class="fas fa-shield-alt" style="color: #5c4965;"></i> Security</h3>
+                <div class="security-item">
+                    <div class="security-info">
+                        <i class="fas fa-lock" style="color: #5c4965;"></i>
+                        <div>
+                            <div class="detail-label">Password</div>
+                            <div class="detail-value">Last changed 3 months ago</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline">Change Password</button>
+                </div>
+                <div class="security-item">
+                    <div class="security-info">
+                        <i class="fas fa-mobile-alt" style="color: #5c4965;"></i>
+                        <div>
+                            <div class="detail-label">Two-Factor Authentication</div>
+                            <div class="detail-value">Enabled (SMS)</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline">Manage 2FA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Modal -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal" id="edit-modal">
+        <h2>Edit Information</h2>
+        <label>First Name:</label>
+        <input type="text" id="input-firstname" value="Geethmi">
+
+        <label>Last Name:</label>
+        <input type="text" id="input-lastname" value="Rajapakshe">
+
+        <label>Email:</label>
+        <input type="email" id="input-email" value="Geethmi.2003@falconeye.com">
+
+        <label>Phone:</label>
+        <input type="text" id="input-phone" value="0768116503">
+
+        <button class="save-btn" id="save-btn">Save Changes</button>
+        <button class="cancel-btn" id="cancel-btn">Cancel</button>
+    </div>
+
+    <!-- <script src="../Resources/bootstrap-5.2.3/js/bootstrap.bundle.min.js"></script> -->
+
+
+
+    <script>
+        // Open Modal
+        document.getElementById("edit-btn").addEventListener("click", function () {
+            document.getElementById("edit-modal").style.display = "block";
+            document.getElementById("modal-overlay").style.display = "block";
+        });
+
+        // Close Modal
+        document.getElementById("cancel-btn").addEventListener("click", function () {
+            document.getElementById("edit-modal").style.display = "none";
+            document.getElementById("modal-overlay").style.display = "none";
+        });
+
+        // Save Changes
+        document.getElementById("save-btn").addEventListener("click", function () {
+            // Get input values
+            let newFirstName = document.getElementById("input-firstname").value;
+            let newLastName = document.getElementById("input-lastname").value;
+            let newEmail = document.getElementById("input-email").value;
+            let newPhone = document.getElementById("input-phone").value;
+
+            // Update display
+            document.getElementById("display-name").textContent = newFirstName + " " + newLastName;
+            document.getElementById("display-firstname").textContent = newFirstName;
+            document.getElementById("display-lastname").textContent = newLastName;
+            document.getElementById("display-email").textContent = newEmail;
+            document.getElementById("display-email2").textContent = newEmail;
+            document.getElementById("display-phone").textContent = newPhone;
+
+            // Close Modal
+            document.getElementById("edit-modal").style.display = "none";
+            document.getElementById("modal-overlay").style.display = "none";
+        });
+    </script>
+</body>
+
+</html>

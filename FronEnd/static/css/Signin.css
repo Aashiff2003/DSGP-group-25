@@ -1,0 +1,257 @@
+/* POPPINS FONT */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* ====== BASE ===== */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ====== Body ===== */
+body{
+    background: url(Resources/bg4.jpg);
+    /* background-color: rgb(83, 76, 89); */
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 0 20px;
+}
+
+/* ====== Form container ===== */
+.form-container{
+    display: flex;
+    width: 1000px;
+    height: 600px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 30px;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+}
+
+.logo-div{
+    position: relative;
+    top: 0px;
+    left: 0px;
+
+}
+.logo{
+    width: 50px;
+    height: 50px;
+}
+
+/* ====== First Column ===== */
+.col-1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 55%;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(30px);
+    border-radius: 0 30% 20% 0;
+}
+
+.image-layer{
+    position: relative;
+}
+.form-image-main{
+    width: 400px;
+    animation: scale-up 3s ease-in-out alternate infinite;
+}
+.form-image{
+    position: absolute;
+    left: 0;
+    width: 400px;
+}
+
+
+/* ====== Form Image Animation ===== */
+.birds{
+    animation: scale-up 3s ease-in-out alternate infinite;
+    left: 50px;
+    width: 350px;
+}
+.world{
+    animation: scale-up 3s ease-in-out alternate infinite;
+    left: 120px;
+    width: 80px;
+    top: 130px;
+}
+.dots{
+    animation: scale-up 3s ease-in-out alternate infinite;
+    left: -20px;
+    top: 20px;
+}
+.flight{
+    animation: scale-up 3s ease-in-out alternate infinite;
+    width: 200px;
+    left: 115px;
+    top: 180px;
+}
+.cloud{
+    animation: scale-up 3s ease-in-out alternate infinite;
+    top: 40px;
+    left: 70px;
+    width: 300px;
+}
+.star{
+    animation: scale-up 3s ease-in-out alternate infinite;
+}
+
+/* ====== Project Name ===== */
+.pro-name{
+    font-size: 28px;
+    color: #fff;
+}
+.featured-words{
+    text-align: center;
+    color: #fff;
+    width: 300px;
+    font-size: 12px;
+}
+
+@keyframes left-right{
+    to{
+        transform: translate(10px);
+    }
+}
+@keyframes up-down{
+    to{
+        transform: translate(10px);
+    }
+}
+@keyframes scale-down{
+    to{
+        transform: scale(0.95);
+    }
+}
+@keyframes scale-up{
+    to{
+        transform: scale(1.05);
+    }
+}
+
+/* ====== Second Column ===== */
+.col-2{
+    position: relative;
+    width: 45%;
+    padding: 20px;
+}
+/* .btn-box{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+.btn{
+    font-weight: 500;
+    padding: 5px 30px;
+    border: none;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    box-shadow: 0 5px 10px rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: .2s;
+} */
+
+/*  ======= Login Form ========  */
+.login-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 4vw;
+    transition: .3s;
+}
+.form-title{
+    margin: 90px 0 40px 0;
+    color: #fff;
+    font-size: 30px;
+    font-weight: 700;
+}
+.form-inputs{
+    width: 100%;
+}
+.input-box{
+    position: relative;
+}
+.input-field{
+    width: 100%;
+    height: 55px;
+    padding: 0 15px;
+    margin: 10px 0;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+::placeholder{
+    color: #fff;
+    font-size: 15px;
+}
+.input-box .icon{
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: #fff;
+}
+.forgot-pass{
+    display: flex;
+    justify-content: right;
+    gap: 5px;
+}
+.forgot-pass a{
+    color: #fff;
+    text-decoration: none;
+    font-size: 12px;
+} 
+.forgot-pass a:hover{
+    text-decoration: underline;
+}
+.input-submit{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 55px;
+    padding: 0 15px;
+    margin: 10px 0;
+    color: #fff;
+    background: #282242;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: .3s;
+}
+.input-submit:hover{
+    gap: 15px;
+}
+
+
+/* ======== Responsive ======== */
+@media (max-width:892px){
+    .form-container{
+        width: 400px;
+    }
+    .col-1{
+        display: none;
+    }
+    .col-2{
+        width: 100%;
+    }
+}

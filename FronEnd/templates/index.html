@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Bird Analysis</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: #f7f1e9;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #5c4965;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+        #video-container {
+            background: #5c4965;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            margin-bottom: 2rem;
+        }
+        #video-feed {
+            width: 100%;
+            display: block;
+        }
+        #stats-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: #5c4965;
+            border-radius: 15px;
+        }
+        .stat-card {
+            background: #ebdfdf;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .stat-label {
+            color: #836c8e;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            color: #5c4965;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Live Bird Analysis Dashboard</h1>
+        
+        <div id="video-container">
+            <img id="video-feed" src="{{ url_for('video_feed') }}">
+        </div>
+
+        <div id="stats-panel">
+            <div class="stat-card">
+                <div class="stat-label">Current Weather</div>
+                <div class="stat-value" id="weather-status">...</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Birds Detected</div>
+                <div class="stat-value" id="bird-count">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Bird Size</div>
+                <div class="stat-value" id="bird-size">...</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Alert Level</div>
+                <div class="stat-value" id="alert-level">...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateStats() {
+            fetch('/stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('weather-status').textContent = data.weather;
+                    document.getElementById('bird-count').textContent = data.bird_count;
+                    document.getElementById('bird-size').textContent = data.bird_size;
+                    document.getElementById('alert-level').textContent = data.alert_level;
+                });
+            setTimeout(updateStats, 500);
+        }
+        updateStats();
+    </script>
+</body>
+</html>

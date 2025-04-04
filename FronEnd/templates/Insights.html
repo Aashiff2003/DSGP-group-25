@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalconEye/LiveInsights</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Insights.css') }}">
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div id="navbar">
+        {% include 'navbar.html' %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="header">
+            <h1>Live Insights</h1><br>
+            <hr class="line">
+        </div>
+        <div class="ins-sub-content">
+            <div class="ins-sub-container">
+                <div class="option-box">
+                    <form method="post" enctype="multipart/form-data">
+                        <h3>Upload Video File</h3>
+                        <input type="file" name="video" accept="video/*" required>
+                        <button type="submit" name="upload">Start Analysis</button>
+                    </form>
+                </div>
+            </div>
+    
+            <div class="ins-sub-container">
+                <div class="option-box">
+                    <form method="post">
+                        <h3 style="margin-bottom: 2rem;">Live Webcam Analysis</h3>
+                        <button type="submit" name="webcam">Start Webcam</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <!-- <div class="main-container">
+        <div class="sub-container">
+            <div class="option-box">
+                <form method="post" enctype="multipart/form-data">
+                    <h3>Upload Video File</h3>
+                    <input type="file" name="video" accept="video/*" required>
+                    <button type="submit" name="upload">Start Analysis</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="sub-container">
+            <div class="option-box">
+                <form method="post">
+                    <h3 style="margin-bottom: 2rem;">Live Webcam Analysis</h3>
+                    <button type="submit" name="webcam">Start Webcam</button>
+                </form>
+            </div>
+        </div>
+    </div> -->
+
+    <script>
+        // Load navbar
+        // fetch('navbar.html').then(response => response.text()).then(data => document.getElementById('navbar').innerHTML = data);
+
+        // Dispaly active tab
+        document.addEventListener("DOMContentLoaded", function () {
+            // Get the current page's file name (without the full path)
+            const currentPage = window.location.pathname.split("/").pop();
+            console.log("Current Page:", currentPage); // Debugging output
+
+            // Find all navigation links
+            const navLinks = document.querySelectorAll(".side-nav-item");
+            navLinks.forEach(link => {
+                console.log("Nav Link:", link);
+            });
+            navLinks.forEach(link => {
+                // Extract the href attribute (filename)
+                const pageLink = link.getAttribute("href").split("/").pop();
+                console.log("Page Link:", pageLink); // Debugging output
+
+                // If the current page matches, add the 'active' class
+                if (currentPage === pageLink) {
+                    link.classList.add("active");
+                } else {
+                    link.classList.remove("active");
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
