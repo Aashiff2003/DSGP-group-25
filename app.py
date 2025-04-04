@@ -169,11 +169,35 @@ def predict_bird_size():
 def process_weather(frame):
     global current_weather
     try:
-        processed = cv2.resize(frame, WEATHER_INPUT_SIZE)
-        processed = processed / 255.0
-        predictions = weather_model.predict(np.expand_dims(processed, axis=0))
-        with lock:
-            current_weather = WEATHER_CLASSES[np.argmax(predictions)]
+        # Check for empty frame
+        if frame is None or frame.size == 0:
+            print("Empty frame received for weather processing")
+            return
+
+        # Convert BGR to RGB (OpenCV uses BGR by default)
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        
+        # Resize to model's expected input size
+        processed = cv2.resize(rgb_frame, WEATHER_INPUT_SIZE)
+        
+        # Normalize pixel values to [0,1]
+        processed = processed.astype('float32') / 255.0
+        
+        # Add batch dimension and predict
+        predictions = weather_model.predict(np.expand_dims(processed, axis=0), verbose=0)
+        
+        # Get predicted class and confidence
+        predicted_class = WEATHER_CLASSES[np.argmax(predictions)]
+        confidence = np.max(predictions)
+        
+        # Only update if confidence is high enough
+        if confidence > 0.6:  # Confidence threshold
+            with lock:
+                current_weather = predicted_class
+            print(f"Weather updated to: {predicted_class} (Confidence: {confidence:.2f})")
+        else:
+            print(f"Low confidence weather prediction: {predicted_class} ({confidence:.2f})")
+            
     except Exception as e:
         print(f"Weather prediction error: {str(e)}")
 
