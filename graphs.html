@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Download Reports</title>
+    <script>
+        window.onload = function () {
+            // Automatically trigger download
+            // window.location.href = "/download/risk";
+
+            let urls = ["/download/risk", "/download/weather"];
+            urls.forEach(url => {
+                let iframe = document.createElement("iframe");
+                iframe.style.display = "none";
+                iframe.src = url;
+                document.body.appendChild(iframe);
+            });
+
+        };
+    </script>
+</head>
+
+<body style="text-align: center; margin-top: 100px;">
+    <h2>Your download is starting...</h2>
+</body>
+
+</html>
