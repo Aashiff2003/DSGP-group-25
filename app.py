@@ -14,6 +14,7 @@ from joblib import load
 import torch
 from tensorflow import config as tf_config
 import pymysql
+import time
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -113,6 +114,14 @@ processing_enabled = False
 last_state = {'weather': "N/A", 'bird_size': "N/A", 'alert_level': "N/A"}
 current_open_record = None
 
+# Flag to contorl live detection
+running = True
+is_detection_running = False
+
+
+# Videos for live feed
+video_paths = ["static/resources/liveFeed/1.mp4", "static/resources/liveFeed/2.mp4", "static/resources/liveFeed/3.mp4", "static/resources/liveFeed/4.mp4", "static/resources/liveFeed/5.mp4"]  
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -124,6 +133,9 @@ def login_required(f):
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+
+    global is_detection_running
+
     if request.method == 'POST':
         username = request.form.get('username').strip()
         password = request.form.get('password').strip()
@@ -137,6 +149,13 @@ def login():
         if user and user.password == password:
             session['user_id'] = user.id
             flash('Login successful!', 'success')
+
+            # Start live detection thread if not already running
+            if not is_detection_running:
+                detection_thread = threading.Thread(target=live_detection, daemon=True)
+                detection_thread.start()
+                is_detection_running = True
+
             return redirect(url_for('home'))
         
         flash('Invalid username or password', 'error')
@@ -335,6 +354,57 @@ def manual_scale(features):
         scaled_value = (features[i] - min_val) / (max_val - min_val)
         scaled_features.append(scaled_value)
     return np.array(scaled_features)
+
+def live_detection():
+    global running,bird_count,current_weather,predicted_size,alert_level
+    global is_detection_running
+
+    try:
+        while running:
+            for video_path in video_paths:
+                cap = cv2.VideoCapture(video_path)
+
+                while cap.isOpened() and running:
+                    success, frame = cap.read()
+                    if not success:
+                        break # Move to next video when current one ends
+
+                    resized_frame = cv2.resize(frame,TARGET_SIZE)
+
+                    results = bird_model(resized_frame)
+                    current_count = len(results[0].boxes) if results else 0
+
+                    with lock:
+                        bird_count = current_count
+
+                    weather_thread = threading.Thread(target=process_weather, args=(frame,))
+                    size_thread = threading.Thread(target=predict_bird_size)
+
+                    weather_thread.start()
+                    size_thread.start()
+
+                    weather_thread.join()
+                    size_thread.join()
+
+                    current_weather = process_weather(frame)  
+                    predicted_size = predict_bird_size() 
+                    # print(current_weather)
+                    # print(predicted_size)
+
+                    alert_thread = threading.Thread(target=predict_alert_level, args=(bird_count, current_weather, predicted_size))
+                    alert_thread.start()
+
+                    alert_thread.join()
+
+                    alert_level = predict_alert_level(bird_count, current_weather, predicted_size) 
+                    # print(alert_level)
+
+                    time.sleep(2) 
+            
+            cap.release()
+    finally:
+        is_detection_running = False
+
 
 def process_weather(frame):
     try:
