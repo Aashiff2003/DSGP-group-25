@@ -1,5 +1,4 @@
-// Variable Declaration
-
+// Tab switching functionality
 const loginBtn = document.querySelector("#login");
 const registerBtn = document.querySelector("#register");
 const loginForm = document.querySelector(".login-form");
@@ -15,9 +14,9 @@ loginBtn.addEventListener('click', () => {
 
     loginForm.style.opacity = 1;
     registerForm.style.opacity = 0;
-
 })
 
+// Register button function
 registerBtn.addEventListener('click', () => {
     loginBtn.style.backgroundColor = "rgba(255,255,255,0.2)";
     registerBtn.style.backgroundColor = "#282242";
@@ -27,40 +26,25 @@ registerBtn.addEventListener('click', () => {
 
     loginForm.style.opacity = 0;
     registerForm.style.opacity = 1;
-
 })
 
-// Form Validation
-document.querySelectorAll(".input-submit").forEach(button => {
-    button.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        const form = button.closest(".form-inputs");
-        const inputs = form.querySelectorAll("input");
-
+// Basic form validation
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
         let isValid = true;
+        const inputs = this.querySelectorAll('input[required]');
+        
         inputs.forEach(input => {
-            if (input.value.trim() === "") {
+            if (!input.value.trim()) {
                 isValid = false;
                 input.style.borderColor = "red";
             } else {
                 input.style.borderColor = "#ccc";
             }
-
-            // Email format check for register form
-            if (input.type === "text" && input.placeholder === "Email") {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(input.value)) {
-                    isValid = false;
-                    input.style.borderColor = "red";
-                }
-            }
         });
-
-        if (isValid) {
-            alert("Form submitted successfully!");
-        } else {
-            alert("Please fill in all fields correctly.");
+        
+        if (!isValid) {
+            e.preventDefault();
         }
     });
 });

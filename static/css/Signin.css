@@ -286,3 +286,31 @@ body{
         width: 100%;
     }
 }
+
+.flash-messages {
+    position: absolute;
+    top: 120px;
+    width: 80%;
+    left: 10%;
+    z-index: 1000;
+}
+
+.flash-message {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.flash-message.error {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid #ff0000;
+    color: #ff0000;
+}
+
+.flash-message.success {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    color: #00ff00;
+}
