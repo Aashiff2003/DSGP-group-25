@@ -11,8 +11,6 @@ import threading
 from datetime import datetime
 import pandas as pd
 from joblib import load
-import time
-import webbrowser
 import torch
 from tensorflow import config as tf_config
 import pymysql
@@ -50,7 +48,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)  # Storing plain text password
+    password = db.Column(db.String(128), nullable=False)
 
 class AlertRecord(db.Model):
     __tablename__ = 'alert_records'
@@ -136,7 +134,7 @@ def login():
         
         user = User.query.filter_by(username=username).first()
         
-        if user and user.password == password:  # Direct plain text comparison
+        if user and user.password == password:
             session['user_id'] = user.id
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
@@ -155,15 +153,12 @@ def register():
         flash('All fields are required', 'error')
         return redirect(url_for('login'))
     
-    # Check if user with same credentials already exists
     existing_user = User.query.filter_by(username=username, password=password).first()
     if existing_user:
-        # If same credentials exist, log them in directly
         session['user_id'] = existing_user.id
         flash('You are already registered - logged in successfully!', 'success')
         return redirect(url_for('home'))
     
-    # Check if email or username is already taken (with different password)
     if User.query.filter_by(email=email).first():
         flash('Email already exists', 'error')
         return redirect(url_for('login'))
@@ -173,7 +168,6 @@ def register():
         return redirect(url_for('login'))
     
     try:
-        # Create new user with plain text password
         new_user = User(email=email, username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
@@ -422,14 +416,9 @@ def handle_fluctuation(bird_count):
         except Exception as e:
             print(f"Database error: {str(e)}")
 
-def open_dashboard():
-    time.sleep(1)
-    webbrowser.open("http://127.0.0.1:5000/")
-
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     with app.app_context():
         db.create_all()
         print("Database tables created/verified")
-    threading.Thread(target=open_dashboard, daemon=True).start()
-    app.run(debug=False)
+    app.run(debug=True)
