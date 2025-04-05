@@ -7,7 +7,9 @@
     <title>FalconEye | SignIn</title>
     <link rel="icon" href="../static/resources/FalconEye.png">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../static/css/Signin.css">
+    <!-- <link rel="stylesheet" href="../static/css/Signin.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Signin.css') }}">
+
 </head>
 
 <body>
@@ -15,19 +17,32 @@
     <div class="form-container">
         <div class="col col-1">
             <div class="image-layer">
-                <img src="../static/resources/white-outline.png" class="form-image-main">
-                <img src="../static/resources/dots.png" class="form-image dots">
-                <img src="../static/resources/birds.png" class="form-image birds">
-                <img src="../static/resources/world.png" class="form-image world">
-                <img src="..//static/resources/flight2.png" class="form-image flight">
-                <img src="../static/resources/cloud.png" class="form-image cloud">
-                <img src="../static/resources/stars.png" class="form-image star">
+                <!-- <img src="../static/resources/white-outline.png" class="form-image-main"> -->
+                <img src="{{ url_for('static', filename='resources/white-outline.png') }}"class="form-image-main">
+
+                <!-- <img src="../static/resources/dots.png" class="form-image dots"> -->
+                <img src="{{ url_for('static', filename='resources/dots.png') }}" class="form-image dots">
+
+                <!-- <img src="../static/resources/birds.png" class="form-image birds"> -->
+                <img src="{{ url_for('static', filename='resources/birds.png') }}" class="form-image birds">
+
+                <!-- <img src="../static/resources/world.png" class="form-image world"> -->
+                <img src="{{ url_for('static', filename='resources/world.png') }}" class="form-image world">
+
+                <!-- <img src="..//static/resources/flight2.png" class="form-image flight"> -->
+                <img src="{{ url_for('static', filename='resources/flight2.png') }}" class="form-image flight">
+
+                <!-- <img src="../static/resources/cloud.png" class="form-image cloud"> -->
+                <img src="{{ url_for('static', filename='resources/cloud.png') }}" class="form-image cloud">
+
+                <!-- <img src="../static/resources/stars.png" class="form-image star"> -->
+                <img src="{{ url_for('static', filename='resources/stars.png') }}" class="form-image star">
+
             </div>
             <p class="pro-name" style="font-family: Broadway;">FalconEye</p>
             <p class="featured-words" style="font-family: Baguet Script;">Seeing Beyond, Protecting Ahead</p>
         </div>
         <div class="col col-2">
-
             <div class="btn-box">
                 <button class="btn btn-1" id="login">Sign In</button>
                 <button class="btn btn-2" id="register">Sign Up</button>
@@ -91,7 +106,9 @@
         </div>
     </div>
 
-    <script src="../static/js/main.js"></script>
+    <!-- <script src="../static/js/main.js"></script> -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
 
 </body>
 
