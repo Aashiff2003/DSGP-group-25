@@ -412,4 +412,4 @@ if __name__ == '__main__':
     
     # Open browser and run app
     threading.Thread(target=open_dashboard, daemon=True).start()
-    app.run(debug=True)
+    app.run(debug=False)
