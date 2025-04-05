@@ -11,7 +11,7 @@
 
 /* ====== Body ===== */
 body{
-    background: url(Resources/bg4.jpg);
+    background: url(../resources/bg4.jpg);
     /* background-color: rgb(83, 76, 89); */
     background-position: center;
     background-size: cover;
@@ -144,8 +144,10 @@ body{
     position: relative;
     width: 45%;
     padding: 20px;
+    overflow: hidden;
 }
-/* .btn-box{
+
+.btn-box{
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -161,10 +163,21 @@ body{
     box-shadow: 0 5px 10px rgba(255, 255, 255, 0.2);
     cursor: pointer;
     transition: .2s;
-} */
+}
+
+.btn-1{
+    background: #282242;
+}
+
+.btn:hover{
+    opacity: 0.75;
+}
 
 /*  ======= Login Form ========  */
 .login-form{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -172,6 +185,24 @@ body{
     padding: 0 4vw;
     transition: .3s;
 }
+
+/*  ======= Resgiter Form ========  */
+.register-form{
+    position: absolute;
+    left: -50%;
+    transform: translate(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 4vw;
+    transition: .3s;
+}
+
+.register-form .form-title{
+    margin-block: 60px 20px;
+}
+
 .form-title{
     margin: 90px 0 40px 0;
     color: #fff;
@@ -254,4 +285,32 @@ body{
     .col-2{
         width: 100%;
     }
+}
+
+.flash-messages {
+    position: absolute;
+    top: 120px;
+    width: 80%;
+    left: 10%;
+    z-index: 1000;
+}
+
+.flash-message {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.flash-message.error {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid #ff0000;
+    color: #ff0000;
+}
+
+.flash-message.success {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    color: #00ff00;
 }
