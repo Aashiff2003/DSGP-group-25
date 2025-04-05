@@ -160,6 +160,10 @@ def manual_scale(features):
     return np.array(scaled_features)
 
 @app.route('/')
+def login():
+    return render_template('Signin.html')
+
+@app.route('/Home')
 def home():
     return render_template('Home.html')
 
