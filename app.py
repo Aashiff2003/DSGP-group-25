@@ -50,15 +50,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-
-    def set_password(self, password):
-        if not password:
-            raise ValueError('Password cannot be empty')
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    password = db.Column(db.String(128), nullable=False)  # Storing plain text password
 
 class AlertRecord(db.Model):
     __tablename__ = 'alert_records'
@@ -138,27 +130,16 @@ def login():
         username = request.form.get('username').strip()
         password = request.form.get('password').strip()
         
-        print(f"Login attempt - Username: {username}, Password: {password}")  # Debug
-        
         if not username or not password:
             flash('Username and password are required', 'error')
             return redirect(url_for('login'))
         
         user = User.query.filter_by(username=username).first()
         
-        if user:
-            print(f"User found: {user.username}")  # Debug
-            print(f"Stored hash: {user.password_hash}")  # Debug
-            if user.check_password(password):
-                print("Password check successful")  # Debug
-                session['user_id'] = user.id
-                print("Login successful! Session set.")  # Debug
-                flash('Login successful!', 'success')
-                return redirect(url_for('home'))
-            else:
-                print("Password check failed")  # Debug
-        else:
-            print("User not found")  # Debug
+        if user and user.password == password:  # Direct plain text comparison
+            session['user_id'] = user.id
+            flash('Login successful!', 'success')
+            return redirect(url_for('home'))
         
         flash('Invalid username or password', 'error')
     
@@ -170,26 +151,32 @@ def register():
     username = request.form.get('username').strip()
     password = request.form.get('password').strip()
     
-    print(f"Registration attempt - Email: {email}, Username: {username}")  # Debug
-    
     if not all([email, username, password]):
         flash('All fields are required', 'error')
         return redirect(url_for('login'))
     
-    existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
+    # Check if user with same credentials already exists
+    existing_user = User.query.filter_by(username=username, password=password).first()
     if existing_user:
-        flash('Email or username already exists', 'error')
+        # If same credentials exist, log them in directly
+        session['user_id'] = existing_user.id
+        flash('You are already registered - logged in successfully!', 'success')
+        return redirect(url_for('home'))
+    
+    # Check if email or username is already taken (with different password)
+    if User.query.filter_by(email=email).first():
+        flash('Email already exists', 'error')
+        return redirect(url_for('login'))
+    
+    if User.query.filter_by(username=username).first():
+        flash('Username already exists', 'error')
         return redirect(url_for('login'))
     
     try:
-        new_user = User(email=email, username=username)
-        new_user.set_password(password)
-        
+        # Create new user with plain text password
+        new_user = User(email=email, username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
-        
-        print(f"New user created: {new_user.username}")  # Debug
-        print(f"Stored hash: {new_user.password_hash}")  # Debug
         
         session['user_id'] = new_user.id
         flash('Registration successful!', 'success')
@@ -197,7 +184,7 @@ def register():
         
     except Exception as e:
         db.session.rollback()
-        print(f"Registration error: {str(e)}")  # Debug
+        print(f"Registration error: {str(e)}")
         flash('Registration failed. Please try again.', 'error')
         return redirect(url_for('login'))
 
